@@ -51,15 +51,12 @@ MidiApp::MidiApp()
 		throw "couldn't create midi output port.";
 	}
 
-	ItemCount num_sources = MIDIGetNumberOfSources();
-	for(ItemCount i = 0; i < num_sources; i++)
-	{
-		MIDIEndpointRef src = MIDIGetSource(i);
-		MIDIPortConnectSource(_midi_in, src, 0);
-		CFStringRef name_str;
-		MIDIObjectGetStringProperty(src, kMIDIPropertyName, &name_str);
-		std::cout << CFStringGetCStringPtr(name_str, 0) << std::endl;
-	}
+	// Inputs
+	
+	setupInput();
+
+	// Output
+	setupOutput();
 
 	_timer = CFRunLoopTimerRef();
 
@@ -74,8 +71,56 @@ MidiApp::MidiApp()
 	 CFRunLoopAddTimer(CFRunLoopGetMain(), _timer, kCFRunLoopCommonModes);
 }
 
+MidiApp::~MidiApp()
+{
+	MIDIClientDispose(_midi_client);
+}
+
+void MidiApp::setupInput()
+{
+	ItemCount num_sources = MIDIGetNumberOfSources();
+	for(ItemCount i = 0; i < num_sources; i++)
+	{
+		MIDIEndpointRef src = MIDIGetSource(i);
+		MIDIPortConnectSource(_midi_in, src, 0);
+		CFStringRef name_str;
+		MIDIObjectGetStringProperty(src, kMIDIPropertyName, &name_str);
+		std::cout << CFStringGetCStringPtr(name_str, 0) << std::endl;
+	}
+}
+
+void MidiApp::setupOutput()
+{
+	CFStringRef port_name = CFStringCreateWithCString(0, "Output", 0);
+	MIDIOutputPortCreate(_midi_client, port_name, &_midi_out);
+
+	int number_of_destinations = MIDIGetNumberOfDestinations();
+
+	if(number_of_destinations < 1)
+		throw "No MIDI destinations";
+
+	_midi_dest = MIDIGetDestination(0);
+}
+
 void MidiApp::update()
 {
 	std::cout << "update" << std::endl;
+	fireEvents();
+}
+
+void MidiApp::fireEvents()
+{
+	std::vector<unsigned char> buffer; 
+
+	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
+	{
+
+	}
+
+	MIDIPacketList* packet_list = reinterpret_cast<MIDIPacketList*>(&buffer[0]);
+
+	MIDIPacket* packet_ptr = MIDIPacketListInit(packet_list);
+	MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, _events.size(), &_events[0]);
+	MIDISend(_midi_out, _midi_dest, packet_list);
 }
 
