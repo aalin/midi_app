@@ -20,7 +20,7 @@ void printPacketInfo(const MIDIPacket* packet) {
 
 void MidiApp::read(const MIDIPacketList* packet_list, void* read_proc_ref_con, void* src_conn_ref_con)
 {
-	std::cout << "midi thing" << std::endl;
+//	std::cout << "midi thing" << std::endl;
 	MIDIPacket* packet = const_cast<MIDIPacket*>(packet_list->packet);
 	for(int i = 0; i < packet_list->numPackets; i++)
 	{
@@ -121,7 +121,7 @@ void MidiApp::setupOutput()
 
 void MidiApp::update()
 {
-	std::cout << "update" << std::endl;
+//	std::cout << "update" << std::endl;
 	fireEvents();
 }
 
