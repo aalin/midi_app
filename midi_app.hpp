@@ -17,6 +17,8 @@ class MidiApp
 
 		void update();
 
+		~MidiApp();
+
 	protected:
 		static MidiApp* instance;
 		static void read(const MIDIPacketList* packet_list, void* read_proc_ref_con, void* src_conn_ref_con);
@@ -25,7 +27,6 @@ class MidiApp
 		void fireEvents();
 
 		MidiApp();
-		~MidiApp();
 
 		MIDIClientRef _midi_client;
 		MIDIPortRef _midi_in;

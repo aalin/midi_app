@@ -1,5 +1,6 @@
 #include "common.hpp"
 #include <iostream>
+#include <sstream>
 
 MidiApp* MidiApp::instance = 0;
 
@@ -51,11 +52,7 @@ MidiApp::MidiApp()
 		throw "couldn't create midi output port.";
 	}
 
-	// Inputs
-	
 	setupInput();
-
-	// Output
 	setupOutput();
 
 	_timer = CFRunLoopTimerRef();
@@ -76,16 +73,31 @@ MidiApp::~MidiApp()
 	MIDIClientDispose(_midi_client);
 }
 
+std::string getPropertyAsString(MIDIObjectRef obj, CFStringRef property_id)
+{
+	CFStringRef str;
+	MIDIObjectGetStringProperty(obj, property_id, &str);
+	return std::string(CFStringGetCStringPtr(str, 0));
+}
+
+std::string inspectMidiDevice(MIDIObjectRef obj)
+{
+	std::stringstream ss;
+	ss << getPropertyAsString(obj, kMIDIPropertyManufacturer) << " " <<
+	      getPropertyAsString(obj, kMIDIPropertyModel) << " (" <<
+	      getPropertyAsString(obj, kMIDIPropertyName) << ")";
+	return ss.str();
+}
+
 void MidiApp::setupInput()
 {
 	ItemCount num_sources = MIDIGetNumberOfSources();
+	std::cout << "Midi inputs:" << std::endl;
 	for(ItemCount i = 0; i < num_sources; i++)
 	{
 		MIDIEndpointRef src = MIDIGetSource(i);
 		MIDIPortConnectSource(_midi_in, src, 0);
-		CFStringRef name_str;
-		MIDIObjectGetStringProperty(src, kMIDIPropertyName, &name_str);
-		std::cout << CFStringGetCStringPtr(name_str, 0) << std::endl;
+		std::cout << "\t" << inspectMidiDevice(src) << std::endl;
 	}
 }
 
@@ -94,9 +106,14 @@ void MidiApp::setupOutput()
 	CFStringRef port_name = CFStringCreateWithCString(0, "Output", 0);
 	MIDIOutputPortCreate(_midi_client, port_name, &_midi_out);
 
-	int number_of_destinations = MIDIGetNumberOfDestinations();
+	std::cout << "Outputs:" << std::endl;
+	for(int i=0; i < MIDIGetNumberOfDestinations(); i++)
+	{
+		MIDIEndpointRef dest = MIDIGetDestination(i);
+		std::cout << "\t" << inspectMidiDevice(dest) << std::endl;
+	}
 
-	if(number_of_destinations < 1)
+	if(MIDIGetNumberOfDestinations() < 1)
 		throw "No MIDI destinations";
 
 	_midi_dest = MIDIGetDestination(0);
@@ -110,17 +127,19 @@ void MidiApp::update()
 
 void MidiApp::fireEvents()
 {
-	std::vector<unsigned char> buffer; 
-
-	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
-	{
-
-	}
+	std::vector<unsigned char> buffer(256, 0);
 
 	MIDIPacketList* packet_list = reinterpret_cast<MIDIPacketList*>(&buffer[0]);
 
 	MIDIPacket* packet_ptr = MIDIPacketListInit(packet_list);
-	MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, _events.size(), &_events[0]);
+
+	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
+	{
+		const MidiEvent& midi_event = *it;
+		const std::vector<unsigned char>& data = midi_event.data();
+		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);
+	}
+
 	MIDISend(_midi_out, _midi_dest, packet_list);
 }
 
