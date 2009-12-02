@@ -1,16 +1,13 @@
 LIBS = -framework CoreServices -framework CoreFoundation -framework CoreMIDI
-OBJS = main.o midi_app.o
+OBJS = main.o midi_app.o bcr2000.o
 APPNAME = midi_app
-OPTS = -ggdb -Wall -Wextra
+CCOPTS = -ggdb -Wall -Wextra
 
 default: $(OBJS)
-	g++ $(OPTS) $(LIBS) -o $(APPNAME) $(OBJS)
+	g++ $(LIBS) -o $(APPNAME) $^
 
-main.o: main.cpp
-	g++ -c main.cpp
-
-midi_app.o: midi_app.cpp midi_app.hpp
-	g++ -c midi_app.cpp
+%.o: %.cpp %.hpp
+	g++ $(CCOPTS) -c $<
 
 clean:
 	rm -f $(APPNAME) *.o

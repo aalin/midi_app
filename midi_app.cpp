@@ -22,7 +22,7 @@ void MidiApp::read(const MIDIPacketList* packet_list, void* read_proc_ref_con, v
 {
 //	std::cout << "midi thing" << std::endl;
 	MIDIPacket* packet = const_cast<MIDIPacket*>(packet_list->packet);
-	for(int i = 0; i < packet_list->numPackets; i++)
+	for(unsigned int i = 0; i < packet_list->numPackets; i++)
 	{
 		printPacketInfo(packet);
 		packet = MIDIPacketNext(packet);
@@ -38,14 +38,14 @@ void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
 MidiApp::MidiApp()
 {
 	OSStatus status;
-	if(status = MIDIClientCreate(CFSTR("MidiApp"), 0, 0, &_midi_client))
+	if((status = MIDIClientCreate(CFSTR("MidiApp"), 0, 0, &_midi_client)))
 	{
 		std::cerr << "Couldn't create MIDI client, " << status << std::endl;
 		std::cerr << GetMacOSStatusErrorString(status) << std::endl;
 		throw "couldn't create midi client";
 	}
 
-	if(status = MIDIInputPortCreate(_midi_client, CFSTR("MidiApp Input"), MidiApp::read, 0, &_midi_in))
+	if((status = MIDIInputPortCreate(_midi_client, CFSTR("MidiApp Input"), MidiApp::read, 0, &_midi_in)))
 	{
 		std::cerr << "Couldn't create midi input port, " << status << std::endl;
 		std::cerr << GetMacOSStatusErrorString(status) << std::endl;
@@ -75,9 +75,11 @@ MidiApp::~MidiApp()
 
 std::string getPropertyAsString(MIDIObjectRef obj, CFStringRef property_id)
 {
-	CFStringRef str;
-	MIDIObjectGetStringProperty(obj, property_id, &str);
-	return std::string(CFStringGetCStringPtr(str, 0));
+	CFStringRef cf_str;
+	MIDIObjectGetStringProperty(obj, property_id, &cf_str);
+	std::string str(CFStringGetCStringPtr(cf_str, 0));
+	CFRelease(cf_str);
+	return str;
 }
 
 std::string inspectMidiDevice(MIDIObjectRef obj)
