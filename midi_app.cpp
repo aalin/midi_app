@@ -16,17 +16,22 @@ void MidiApp::read(const MIDIPacketList* packet_list, void* midi_app, void* src_
 
 void MidiApp::receivePacket(const MIDIPacket* packet)
 {
-   double timeinsec = packet->timeStamp / (double)1e9;
-   printf("%9.3lf\t", timeinsec);
-   int i;
-   for (i=0; i<packet->length; i++) {
-      if (packet->data[i] <= 0x7f) {
-         printf("%d ", packet->data[i]);
-      } else {
-         printf("0x%x ", packet->data[i]);
-      }
-   }
-   printf("\n");
+	pthread_mutex_lock(&_event_queue_mutex);
+
+	std::vector<unsigned char> v(packet->length);
+	for (int i=0; i<packet->length; i++)
+	{
+		v.push_back(static_cast<unsigned char>(packet->data[i]));
+		std::cout << static_cast<int>(packet->data[i]) << " ";
+	}
+	std::cout << std::endl;
+
+	v[1] += 1;
+
+	MidiEvent event(v);
+	_events.push_back(event);
+
+	pthread_mutex_unlock(&_event_queue_mutex);
 }
 
 void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
@@ -37,6 +42,8 @@ void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
 
 MidiApp::MidiApp()
 {
+	pthread_mutex_init(&_event_queue_mutex, 0);
+
 	OSStatus status;
 	if((status = MIDIClientCreate(CFSTR("MidiApp"), 0, 0, &_midi_client)))
 	{
@@ -70,6 +77,7 @@ MidiApp::MidiApp()
 
 MidiApp::~MidiApp()
 {
+	pthread_mutex_destroy(&_event_queue_mutex);
 	MIDIClientDispose(_midi_client);
 }
 
@@ -112,13 +120,13 @@ void MidiApp::setupOutput()
 	for(unsigned int i=0; i < MIDIGetNumberOfDestinations(); i++)
 	{
 		MIDIEndpointRef dest = MIDIGetDestination(i);
-		std::cout << "\t" << inspectMidiDevice(dest) << std::endl;
+		std::cout << i << "." << "\t" << inspectMidiDevice(dest) << std::endl;
 	}
 
 	if(MIDIGetNumberOfDestinations() < 1)
 		throw "No MIDI destinations";
 
-	_midi_dest = MIDIGetDestination(0);
+	_midi_dest = MIDIGetDestination(3);
 }
 
 void MidiApp::update()
@@ -129,11 +137,15 @@ void MidiApp::update()
 
 void MidiApp::fireEvents()
 {
+	pthread_mutex_lock(&_event_queue_mutex);
+
 	std::vector<unsigned char> buffer(256, 0);
 
 	MIDIPacketList* packet_list = reinterpret_cast<MIDIPacketList*>(&buffer[0]);
 
 	MIDIPacket* packet_ptr = MIDIPacketListInit(packet_list);
+
+	std::cout << "Firing " << _events.size() << " events" << std::endl;
 
 	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
 	{
@@ -141,6 +153,10 @@ void MidiApp::fireEvents()
 		const std::vector<unsigned char>& data = midi_event.data();
 		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);
 	}
+
+	_events.clear();
+
+	pthread_mutex_unlock(&_event_queue_mutex);
 
 	MIDISend(_midi_out, _midi_dest, packet_list);
 }

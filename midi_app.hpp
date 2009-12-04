@@ -36,9 +36,11 @@ class MidiApp
 		CFRunLoopTimerRef _timer;
 
 		std::vector<MidiEvent> _events;
+		pthread_mutex_t _event_queue_mutex;
 
 		void setupInput();
 		void setupOutput();
+
 };
 
 #endif
