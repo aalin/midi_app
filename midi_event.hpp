@@ -7,7 +7,9 @@ class MidiEvent
 		MidiEvent() { }
 		MidiEvent(std::vector<unsigned char> data) : _data(data) { }
 		std::vector<unsigned char> data() const { return _data; }
-	
+
+		friend std::ostream& operator<<(std::ostream& o, const MidiEvent& midi_event);
+
 	private:
 		std::vector<unsigned char> _data;
 };

@@ -18,7 +18,7 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 {
 	pthread_mutex_lock(&_event_queue_mutex);
 
-	std::vector<unsigned char> v(packet->length);
+	std::vector<unsigned char> v;
 	for (int i=0; i<packet->length; i++)
 	{
 		v.push_back(static_cast<unsigned char>(packet->data[i]));
@@ -28,7 +28,9 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 
 	v[1] += 1;
 
+	std::cout << v.size() << std::endl;
 	MidiEvent event(v);
+	std::cout << "Queing event: " << event << std::endl;
 	_events.push_back(event);
 
 	pthread_mutex_unlock(&_event_queue_mutex);
@@ -131,7 +133,6 @@ void MidiApp::setupOutput()
 
 void MidiApp::update()
 {
-//	std::cout << "update" << std::endl;
 	fireEvents();
 }
 
@@ -140,17 +141,15 @@ void MidiApp::fireEvents()
 	pthread_mutex_lock(&_event_queue_mutex);
 
 	std::vector<unsigned char> buffer(256, 0);
-
 	MIDIPacketList* packet_list = reinterpret_cast<MIDIPacketList*>(&buffer[0]);
 
 	MIDIPacket* packet_ptr = MIDIPacketListInit(packet_list);
-
-	std::cout << "Firing " << _events.size() << " events" << std::endl;
 
 	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
 	{
 		const MidiEvent& midi_event = *it;
 		const std::vector<unsigned char>& data = midi_event.data();
+		std::cout << "Firing event: " << midi_event << std::endl;
 		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);
 	}
 
