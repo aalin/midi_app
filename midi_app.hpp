@@ -14,8 +14,8 @@ class MidiApp
 		}
 
 		void run();
-
 		void update();
+		void receivePacket(const MIDIPacket* packet);
 
 		~MidiApp();
 

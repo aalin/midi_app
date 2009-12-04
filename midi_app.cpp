@@ -4,7 +4,18 @@
 
 MidiApp* MidiApp::instance = 0;
 
-void printPacketInfo(const MIDIPacket* packet) {
+void MidiApp::read(const MIDIPacketList* packet_list, void* midi_app, void* src_conn_ref_con)
+{
+	MIDIPacket* packet = const_cast<MIDIPacket*>(packet_list->packet);
+	for(unsigned int i = 0; i < packet_list->numPackets; i++)
+	{
+		static_cast<MidiApp*>(midi_app)->receivePacket(packet);
+		packet = MIDIPacketNext(packet);
+	}
+}
+
+void MidiApp::receivePacket(const MIDIPacket* packet)
+{
    double timeinsec = packet->timeStamp / (double)1e9;
    printf("%9.3lf\t", timeinsec);
    int i;
@@ -16,17 +27,6 @@ void printPacketInfo(const MIDIPacket* packet) {
       }
    }
    printf("\n");
-}
-
-void MidiApp::read(const MIDIPacketList* packet_list, void* read_proc_ref_con, void* src_conn_ref_con)
-{
-//	std::cout << "midi thing" << std::endl;
-	MIDIPacket* packet = const_cast<MIDIPacket*>(packet_list->packet);
-	for(unsigned int i = 0; i < packet_list->numPackets; i++)
-	{
-		printPacketInfo(packet);
-		packet = MIDIPacketNext(packet);
-	}
 }
 
 void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
@@ -45,7 +45,7 @@ MidiApp::MidiApp()
 		throw "couldn't create midi client";
 	}
 
-	if((status = MIDIInputPortCreate(_midi_client, CFSTR("MidiApp Input"), MidiApp::read, 0, &_midi_in)))
+	if((status = MIDIInputPortCreate(_midi_client, CFSTR("MidiApp Input"), MidiApp::read, this, &_midi_in)))
 	{
 		std::cerr << "Couldn't create midi input port, " << status << std::endl;
 		std::cerr << GetMacOSStatusErrorString(status) << std::endl;
@@ -109,7 +109,7 @@ void MidiApp::setupOutput()
 	MIDIOutputPortCreate(_midi_client, port_name, &_midi_out);
 
 	std::cout << "Outputs:" << std::endl;
-	for(int i=0; i < MIDIGetNumberOfDestinations(); i++)
+	for(unsigned int i=0; i < MIDIGetNumberOfDestinations(); i++)
 	{
 		MIDIEndpointRef dest = MIDIGetDestination(i);
 		std::cout << "\t" << inspectMidiDevice(dest) << std::endl;
