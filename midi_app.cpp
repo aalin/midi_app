@@ -28,9 +28,7 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 
 	v[1] += 1;
 
-	std::cout << v.size() << std::endl;
 	MidiEvent event(v);
-	std::cout << "Queing event: " << event << std::endl;
 	_events.push_back(event);
 
 	pthread_mutex_unlock(&_event_queue_mutex);
@@ -149,7 +147,6 @@ void MidiApp::fireEvents()
 	{
 		const MidiEvent& midi_event = *it;
 		const std::vector<unsigned char>& data = midi_event.data();
-		std::cout << "Firing event: " << midi_event << std::endl;
 		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);
 	}
 
