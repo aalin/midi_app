@@ -1,8 +1,6 @@
 #ifndef MIDI_APP_H
 #define MIDI_APP_H
 
-class MidiEvent;
-
 class MidiApp
 {
 	public:
@@ -35,8 +33,7 @@ class MidiApp
 
 		CFRunLoopTimerRef _timer;
 
-		std::vector<MidiEvent> _events;
-		pthread_mutex_t _event_queue_mutex;
+		EventQueue _event_queue;
 
 		void setupInput();
 		void setupOutput();

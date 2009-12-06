@@ -1,5 +1,5 @@
 LIBS = -framework CoreServices -framework CoreFoundation -framework CoreMIDI
-OBJS = main.o midi_app.o bcr2000.o midi_event.o
+OBJS = main.o midi_app.o bcr2000.o midi_event.o event_queue.o
 APPNAME = midi_app
 CCOPTS = -ggdb -Wall -Wextra
 
