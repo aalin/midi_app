@@ -11,8 +11,8 @@ Pattern::Pattern(std::string str)
 {
 	std::istringstream iss(str);
 	std::copy(
-		std::istream_iterator<unsigned char>(iss),
-		std::istream_iterator<unsigned char>(),
+		std::istream_iterator<int>(iss),
+		std::istream_iterator<int>(),
 		std::back_inserter<std::vector<unsigned char> >(_values)
 	);
 }

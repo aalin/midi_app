@@ -8,6 +8,9 @@ Player::Player()
 void
 Player::update()
 {
-	std::cout << "midi app" << std::endl;
+	std::cout << (int)_patterns[97].at(_i) << std::endl;
+//	std::cout << "midi app" << std::endl;
+
+	_i += 1;
 }
 
