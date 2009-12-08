@@ -18,14 +18,8 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 {
 	std::vector<unsigned char> v;
 	for (int i=0; i<packet->length; i++)
-	{
 		v.push_back(static_cast<unsigned char>(packet->data[i]));
-//		std::cout << static_cast<int>(packet->data[i]) << " ";
-	}
-//	std::cout << std::endl;
-
-	MidiEvent event(v);
-	_event_queue.addEvent(event);
+	_event_queue.addEvent(MidiEvent(v));
 }
 
 void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
