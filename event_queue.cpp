@@ -40,3 +40,14 @@ void EventQueue::fireEvents(MIDIPortRef port, MIDIEndpointRef destination)
 	MIDISend(port, destination, packet_list);
 }
 
+std::vector<MidiEvent> EventQueue::getEventsAndClear()
+{
+	pthread_mutex_lock(&_events_mutex);
+
+	std::vector<MidiEvent> new_events(_events);
+	_events.clear();
+	pthread_mutex_unlock(&_events_mutex);
+
+	return new_events;
+}
+

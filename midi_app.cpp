@@ -20,11 +20,9 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 	for (int i=0; i<packet->length; i++)
 	{
 		v.push_back(static_cast<unsigned char>(packet->data[i]));
-		std::cout << static_cast<int>(packet->data[i]) << " ";
+//		std::cout << static_cast<int>(packet->data[i]) << " ";
 	}
-	std::cout << std::endl;
-
-	v[1] += 1;
+//	std::cout << std::endl;
 
 	MidiEvent event(v);
 	_event_queue.addEvent(event);
@@ -128,8 +126,8 @@ void MidiApp::setupOutput()
 
 void MidiApp::update()
 {
-	_event_queue.fireEvents(_midi_out, _midi_dest);
+//	_event_queue.fireEvents(_midi_out, _midi_dest);
 	if(_player)
-		_player->update();
+		_player->update(_event_queue.getEventsAndClear());
 }
 
