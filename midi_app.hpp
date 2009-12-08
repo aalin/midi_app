@@ -17,6 +17,8 @@ class MidiApp
 		void update();
 		void receivePacket(const MIDIPacket* packet);
 
+		void fireEventQueue(EventQueue& event_queue);
+
 		~MidiApp();
 
 	protected:

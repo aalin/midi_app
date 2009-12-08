@@ -19,6 +19,7 @@ void MidiApp::receivePacket(const MIDIPacket* packet)
 	std::vector<unsigned char> v;
 	for (int i=0; i<packet->length; i++)
 		v.push_back(static_cast<unsigned char>(packet->data[i]));
+//	std::cout <<MidiEvent(v) << std::endl;
 	_event_queue.addEvent(MidiEvent(v));
 }
 
@@ -115,13 +116,17 @@ void MidiApp::setupOutput()
 	if(MIDIGetNumberOfDestinations() < 1)
 		throw "No MIDI destinations";
 
-	_midi_dest = MIDIGetDestination(3);
+	_midi_dest = MIDIGetDestination(0);
 }
 
 void MidiApp::update()
 {
-//	_event_queue.fireEvents(_midi_out, _midi_dest);
 	if(_player)
-		_player->update(_event_queue.getEventsAndClear());
+		_player->update(_event_queue.getEventsAndClear(), *this);
+}
+
+void MidiApp::fireEventQueue(EventQueue& event_queue)
+{
+	event_queue.fireEvents(_midi_out, _midi_dest);
 }
 

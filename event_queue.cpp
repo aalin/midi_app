@@ -28,6 +28,7 @@ void EventQueue::fireEvents(MIDIPortRef port, MIDIEndpointRef destination)
 
 	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
 	{
+		std::cout << "Event: " << *it << std::endl;
 		const MidiEvent& midi_event = *it;
 		const std::vector<unsigned char>& data = midi_event.data();
 		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);
