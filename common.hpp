@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 #include "event_queue.hpp"
 #include "midi_app.hpp"
 #include "midi_event.hpp"
+
+#include "pattern.hpp"
+#include "player.hpp"

@@ -37,6 +37,7 @@ void MidiApp::timerCallback(CFRunLoopTimerRef timer, void* info)
 }
 
 MidiApp::MidiApp()
+	: _player(0)
 {
 	OSStatus status;
 	if((status = MIDIClientCreate(CFSTR("MidiApp"), 0, 0, &_midi_client)))
@@ -67,11 +68,14 @@ MidiApp::MidiApp()
 	 _timer = CFRunLoopTimerCreate(kCFAllocatorDefault, CFAbsoluteTimeGetCurrent() + 0.05, 0.05, 0, 0, MidiApp::timerCallback, &context);
 
 	 CFRunLoopAddTimer(CFRunLoopGetMain(), _timer, kCFRunLoopCommonModes);
+
+	 _player = new Player();
 }
 
 MidiApp::~MidiApp()
 {
 	MIDIClientDispose(_midi_client);
+	delete _player;
 }
 
 std::string getPropertyAsString(MIDIObjectRef obj, CFStringRef property_id)
@@ -125,5 +129,7 @@ void MidiApp::setupOutput()
 void MidiApp::update()
 {
 	_event_queue.fireEvents(_midi_out, _midi_dest);
+	if(_player)
+		_player->update();
 }
 

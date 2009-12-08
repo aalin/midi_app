@@ -1,6 +1,8 @@
 #ifndef MIDI_APP_H
 #define MIDI_APP_H
 
+class Player;
+
 class MidiApp
 {
 	public:
@@ -38,6 +40,7 @@ class MidiApp
 		void setupInput();
 		void setupOutput();
 
+		Player* _player;
 };
 
 #endif
