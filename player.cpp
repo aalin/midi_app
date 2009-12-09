@@ -3,11 +3,15 @@
 Player::Player()
 {
 	_patterns[97] = std::pair<unsigned char, Pattern>(38, Pattern("100 000 000 000 000 000 000 000 000 000 000 000 050 000 000 000    100 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000")); // bass drum
-	_patterns[89] = std::pair<unsigned char, Pattern>(54, Pattern("000 000 000 000 000 000 000 000 100 000 000 000 000 000 000 000")); // snare drum
+	_patterns[89] = std::pair<unsigned char, Pattern>(59, Pattern("030 000 030 000 030 000 030 000 100 000 030 000 030 000 030 000")); // snare drum
 
-	_patterns[82] = std::pair<unsigned char, Pattern>(71, Pattern("100 000 020 000 010 000 020 000 100 000 020 000 010 000 020 000")); // hihat1
+	_patterns[82] = std::pair<unsigned char, Pattern>(71, Pattern("100 000 020 000 010 000 020 000 070 000 020 000 010 000 020 000    100 000 020 000 010 000 020 000 070 000 020 000 010 000 020 000")); // hihat1
 	_patterns[90] = std::pair<unsigned char, Pattern>(73, Pattern("000 000 100 000 000 000 100 000 000 000 100 000 000 000 100 000")); // hihat2
 	_patterns[98] = std::pair<unsigned char, Pattern>(74, Pattern("000 020 000 020 100 020 000 020 000 020 000 020 100 020 000 020")); // hihat3
+
+	_patterns[99] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
+	_patterns[100] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
+	_patterns[101] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
 }
 
 void Player::update(std::vector<MidiEvent> midi_events, MidiApp& midi_app)
@@ -27,10 +31,33 @@ void Player::update(std::vector<MidiEvent> midi_events, MidiApp& midi_app)
 	{
 		unsigned char pattern_value = it->second.second.at(_i);
 		unsigned char bcr_value = _bcr.get(it->first);
+		unsigned char channel = 0;
+		unsigned char velocity = 100;
+		unsigned char note = it->second.first;
+
+		if(it->first == 99) // just for synth test!
+		{
+			note = _bcr.get(91);
+			channel = 1;
+			velocity = _bcr.get(3);
+		}
+		else if(it->first == 100) // just for synth test!
+		{
+			note = _bcr.get(92);
+			channel = 2;
+			velocity = _bcr.get(4);
+		}
+		else if(it->first == 101) // just for synth test!
+		{
+			note = _bcr.get(93);
+			channel = 3;
+			velocity = _bcr.get(5);
+		}
+
 		if(bcr_value > 128 - pattern_value)
 		{
 			std::cout << (int)pattern_value << std::endl;
-			_event_queue.addEvent(MidiEvent::noteOn(0, it->second.first, 100));
+			_event_queue.addEvent(MidiEvent::noteOn(channel, note, velocity));
 		}
 	}
 
