@@ -1,6 +1,8 @@
 #ifndef MIDI_EVENT_HPP
 #define MIDI_EVENT_HPP
 
+#include <vector>
+
 class MidiEvent
 {
 	public:

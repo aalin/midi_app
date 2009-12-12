@@ -1,6 +1,9 @@
 #ifndef MIDI_APP_H
 #define MIDI_APP_H
 
+#include <CoreMIDI/MIDIServices.h>
+#include "event_queue.hpp"
+
 class Player;
 
 class MidiApp

@@ -1,4 +1,5 @@
-#include "common.hpp"
+#include "midi_app.hpp"
+#include "player.hpp"
 #include <iostream>
 #include <sstream>
 

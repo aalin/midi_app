@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include "midi_app.hpp"
 
 int main()
 {

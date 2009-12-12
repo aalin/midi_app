@@ -1,7 +1,8 @@
 #ifndef DRUMMER_HPP
 #define DRUMMER_HPP
 
-class Pattern;
+#include "../note_generator.hpp"
+#include "../pattern.hpp"
 
 namespace NoteGenerators
 {

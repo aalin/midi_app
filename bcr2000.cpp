@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include "bcr2000.hpp"
 
 BCR2000::BCR2000()
 	: _values(128, 0)

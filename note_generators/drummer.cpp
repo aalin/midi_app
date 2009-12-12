@@ -1,4 +1,4 @@
-#include "../common.hpp"
+#include "drummer.hpp"
 
 NoteGenerators::Drummer::Drummer(unsigned char channel)
 	: _channel(channel)

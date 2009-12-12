@@ -1,6 +1,12 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#include <map>
+#include "midi_app.hpp"
+#include "event_queue.hpp"
+#include "pattern.hpp"
+#include "note_generators/drummer.hpp"
+
 class Player
 {
 	public:

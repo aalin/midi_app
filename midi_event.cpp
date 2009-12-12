@@ -1,4 +1,5 @@
-#include "common.hpp"
+#include "midi_event.hpp"
+#include <ostream>
 
 std::ostream& operator<<(std::ostream& o, const MidiEvent& midi_event)
 {

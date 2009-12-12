@@ -1,6 +1,9 @@
 #ifndef PATTERN_HPP
 #define PATTERN_HPP
 
+#include <vector>
+#include <string>
+
 class Pattern
 {
 	public:

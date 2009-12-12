@@ -1,7 +1,10 @@
 #ifndef EVENT_QUEUE_HPP
 #define EVENT_QUEUE_HPP
 
-class MidiEvent;
+#include <CoreMIDI/MIDIServices.h>
+#include <pthread.h>
+#include <vector>
+#include "midi_event.hpp"
 
 class EventQueue
 {

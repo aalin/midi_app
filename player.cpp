@@ -1,4 +1,4 @@
-#include "common.hpp"
+#include "player.hpp"
 
 Player::Player()
 	: _drummer(0)
