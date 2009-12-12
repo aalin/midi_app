@@ -2,8 +2,8 @@
 
 int main()
 {
-	MidiApp app = MidiApp::getInstance();
-	CFRunLoopRun();
+	MidiApp app;
+	app.run();
 	return 0;
 }
 

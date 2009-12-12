@@ -21,5 +21,5 @@ set(MAIN_SOURCES
 	note_generators/drummer
 )
 
-add_executable(midi_app ${MAIN_SOURCES})
-target_link_libraries(midi_app ${COREFOUNDATION} ${COREMIDI} ${CORESERVICES} ${PTHREAD})
+add_executable(MidiApp ${MAIN_SOURCES})
+target_link_libraries(MidiApp ${COREFOUNDATION} ${COREMIDI} ${CORESERVICES} ${PTHREAD})

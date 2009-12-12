@@ -2,8 +2,6 @@
 #include <iostream>
 #include <sstream>
 
-MidiApp* MidiApp::instance = 0;
-
 void MidiApp::read(const MIDIPacketList* packet_list, void* midi_app, void* src_conn_ref_con)
 {
 	MIDIPacket* packet = const_cast<MIDIPacket*>(packet_list->packet);
@@ -69,6 +67,11 @@ MidiApp::~MidiApp()
 {
 	MIDIClientDispose(_midi_client);
 	delete _player;
+}
+
+void MidiApp::run()
+{
+	CFRunLoopRun();
 }
 
 std::string getPropertyAsString(MIDIObjectRef obj, CFStringRef property_id)
