@@ -53,5 +53,7 @@ class MidiEvent
 		std::vector<unsigned char> _data;
 };
 
+typedef std::vector<MidiEvent> MidiEventList;
+
 #endif
 

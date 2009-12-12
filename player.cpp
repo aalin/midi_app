@@ -1,13 +1,17 @@
 #include "common.hpp"
 
 Player::Player()
+	: _drummer(0)
 {
-	_patterns[97] = std::pair<unsigned char, Pattern>(38, Pattern("100 000 000 000 000 000 000 000 000 000 000 000 050 000 000 000    100 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000")); // bass drum
-	_patterns[89] = std::pair<unsigned char, Pattern>(59, Pattern("030 000 030 000 030 000 030 000 100 000 030 000 030 000 030 000")); // snare drum
-
-	_patterns[82] = std::pair<unsigned char, Pattern>(71, Pattern("100 000 020 000 010 000 020 000 070 000 020 000 010 000 020 000    100 000 020 000 010 000 020 000 070 000 020 000 010 000 020 000")); // hihat1
-	_patterns[90] = std::pair<unsigned char, Pattern>(73, Pattern("000 000 100 000 000 000 100 000 000 000 100 000 000 000 100 000")); // hihat2
-	_patterns[98] = std::pair<unsigned char, Pattern>(74, Pattern("000 020 000 020 100 020 000 020 000 020 000 020 100 020 000 020")); // hihat3
+	_patterns[82] = std::pair<unsigned char, Pattern>(68, Pattern(
+		"100 000 000 000 000 000 000 000 050 000 000 000 000 000 000 000"
+	)); // hihat1
+	_patterns[90] = std::pair<unsigned char, Pattern>(51, Pattern(
+		"100 000 000 000 000 000 000 000 000 000 000 000 050 000 000 000"
+	)); // hihat2
+	_patterns[98] = std::pair<unsigned char, Pattern>(59, Pattern(
+		"100 000 000 000 000 000 000 000 050 000 000 000 000 000 000 000"
+	)); // hihat3
 
 	_patterns[99] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
 	_patterns[100] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
@@ -56,10 +60,14 @@ void Player::update(std::vector<MidiEvent> midi_events, MidiApp& midi_app)
 
 		if(bcr_value > 128 - pattern_value)
 		{
-			std::cout << (int)pattern_value << std::endl;
+//			std::cout << (int)pattern_value << std::endl;
 			_event_queue.addEvent(MidiEvent::noteOn(channel, note, velocity));
 		}
 	}
+
+	MidiEventList drummer_events = _drummer.getEventsAt(_i, _bcr);
+	for(MidiEventList::iterator it = drummer_events.begin(); it != drummer_events.end(); it++)
+		_event_queue.addEvent(*it);
 
 	midi_app.fireEventQueue(_event_queue);
 

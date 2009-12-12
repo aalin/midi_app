@@ -21,14 +21,21 @@ void EventQueue::fireEvents(MIDIPortRef port, MIDIEndpointRef destination)
 {
 	pthread_mutex_lock(&_events_mutex);
 
+	if(_events.size() == 0)
+	{
+		pthread_mutex_unlock(&_events_mutex);
+		return;
+	}
+
 	std::vector<unsigned char> buffer(256, 0);
 	MIDIPacketList* packet_list = reinterpret_cast<MIDIPacketList*>(&buffer[0]);
 
 	MIDIPacket* packet_ptr = MIDIPacketListInit(packet_list);
 
+	std::cout << "Firing " << _events.size() << " events" << std::endl;
 	for(std::vector<MidiEvent>::iterator it = _events.begin(); it != _events.end(); it++)
 	{
-		std::cout << "Event: " << *it << std::endl;
+		std::cout << "  Event: " << *it << std::endl;
 		const MidiEvent& midi_event = *it;
 		const std::vector<unsigned char>& data = midi_event.data();
 		packet_ptr = MIDIPacketListAdd(packet_list, 256, packet_ptr, 0, data.size(), &data[0]);

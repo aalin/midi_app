@@ -13,6 +13,8 @@ class Player
 
 		BCR2000 _bcr;
 		EventQueue _event_queue;
+
+		NoteGenerators::Drummer _drummer;
 };
 
 #endif

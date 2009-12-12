@@ -4,7 +4,7 @@
 
 unsigned char Pattern::at(unsigned int i) const
 {
-	return _values[(i + _values.size()) % _values.size()];
+	return _values[i % _values.size()];
 }
 
 Pattern::Pattern(std::string str)

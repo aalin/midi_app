@@ -1,2 +1,5 @@
 *.o
 midi_app
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake

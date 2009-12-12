@@ -9,5 +9,8 @@
 #include "midi_app.hpp"
 #include "midi_event.hpp"
 
+#include "note_generator.hpp"
+#include "note_generators/drummer.hpp"
+
 #include "pattern.hpp"
 #include "player.hpp"

@@ -5,7 +5,7 @@ BCR2000::BCR2000()
 {
 }
 
-unsigned char BCR2000::get(unsigned char i)
+unsigned char BCR2000::get(unsigned char i) const
 {
 	validateValue(i);
 	return _values[i];
