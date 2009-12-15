@@ -1,7 +1,8 @@
 #include "player.hpp"
 
 Player::Player()
-	: _drummer(0)
+	: _drummer(0),
+	  _scale_player(1, Scale::major())
 {
 	_patterns[82] = std::pair<unsigned char, Pattern>(68, Pattern(
 		"100 000 000 000 000 000 000 000 050 000 000 000 000 000 000 000"
@@ -13,7 +14,7 @@ Player::Player()
 		"100 000 000 000 000 000 000 000 050 000 000 000 000 000 000 000"
 	)); // hihat3
 
-	_patterns[99] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
+//	_patterns[99] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
 	_patterns[100] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
 	_patterns[101] = std::pair<unsigned char, Pattern>(0, Pattern("100 000 010 000 020 000 010 000 100 000 020 000 050 000 020 000")); // some synth
 }
@@ -65,12 +66,18 @@ void Player::update(std::vector<MidiEvent> midi_events, MidiApp& midi_app)
 		}
 	}
 
-	MidiEventList drummer_events = _drummer.getEventsAt(_i, _bcr);
-	for(MidiEventList::iterator it = drummer_events.begin(); it != drummer_events.end(); it++)
-		_event_queue.addEvent(*it);
+	addEventsFromNoteGenerator(_drummer);
+	addEventsFromNoteGenerator(_scale_player);
 
 	midi_app.fireEventQueue(_event_queue);
 
 	_i += 1;
+}
+
+void Player::addEventsFromNoteGenerator(NoteGenerator& generator)
+{
+	MidiEventList events = generator.getEventsAt(_i, _bcr);
+	for(MidiEventList::iterator it = events.begin(); it != events.end(); it++)
+		_event_queue.addEvent(*it);
 }
 

@@ -6,6 +6,7 @@
 #include "event_queue.hpp"
 #include "pattern.hpp"
 #include "note_generators/drummer.hpp"
+#include "note_generators/scale_player.hpp"
 
 class Player
 {
@@ -21,6 +22,9 @@ class Player
 		EventQueue _event_queue;
 
 		NoteGenerators::Drummer _drummer;
+		NoteGenerators::ScalePlayer _scale_player;
+
+		void addEventsFromNoteGenerator(NoteGenerator& generator);
 };
 
 #endif
