@@ -7,6 +7,12 @@ NoteGenerators::Drummer::Drummer(unsigned char channel)
 	_bass_pattern = new Pattern("100 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 100 000 000 000 000 000 000 000 100 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000 000");
 };
 
+NoteGenerators::Drummer::~Drummer()
+{
+	delete _snare_pattern;
+	delete _bass_pattern;
+}
+
 MidiEventList
 NoteGenerators::Drummer::getEventsAt(unsigned int position, const BCR2000& bcr)
 {
