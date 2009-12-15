@@ -2,23 +2,21 @@
 #define EVENT_QUEUE_HPP
 
 #include <CoreMIDI/MIDIServices.h>
-#include <pthread.h>
 #include <vector>
 #include "midi_event.hpp"
+#include "mutex.hpp"
 
 class EventQueue
 {
 	public:
-		EventQueue();
-		~EventQueue();
 		void addEvent(MidiEvent event);
 		void fireEvents(MIDIPortRef port, MIDIEndpointRef destination);
 
-		std::vector<MidiEvent> getEventsAndClear();
+		MidiEventList getEventsAndClear();
 
 	protected:
-		std::vector<MidiEvent> _events;
-		pthread_mutex_t _events_mutex;
+		MidiEventList _events;
+		Mutex _events_mutex;
 };
 
 #endif
