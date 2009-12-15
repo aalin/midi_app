@@ -10,12 +10,11 @@ namespace NoteGenerators
 	{
 		public:
 			Drummer(unsigned char channel);
-			~Drummer();
 			MidiEventList getEventsAt(unsigned int position, const BCR2000& bcr);
 
 		protected:
-			Pattern* _snare_pattern;
-			Pattern* _bass_pattern;
+			Pattern _snare_pattern;
+			Pattern _bass_pattern;
 			unsigned char _channel;
 	};
 }
